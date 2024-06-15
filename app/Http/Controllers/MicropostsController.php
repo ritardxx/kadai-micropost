@@ -14,8 +14,7 @@ class MicropostsController extends Controller
         if (\Auth::check()) { // 認証済みの場合
             // 認証済みユーザーを取得
             $user = \Auth::user();
-            // ユーザーの投稿の一覧を作成日時の降順で取得
-            // （後のChapterで他ユーザーの投稿も取得するように変更しますが、現時点ではこのユーザーの投稿のみ取得します）
+            // ユーザーの投稿の一覧を作成日時の降順で取得）
             $microposts = $user->feed_microposts()->orderBy('created_at', 'desc')->paginate(10);
             $data = [
                 'user' => $user,
@@ -58,5 +57,22 @@ class MicropostsController extends Controller
         // 前のURLへリダイレクトさせる
         return back()
             ->with('Delete Failed');
+    }
+    
+    public function favorites()
+    {
+        $data = [];
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            // お気に入り登録している投稿を取得
+            $favoriteMicroposts = $user->favorite_microposts()->orderBy('created_at', 'desc')->paginate(10);
+            
+            $data = [
+              'user' => $user,
+              'microposts' => $micropost,
+            ];
+        }
+        
+        return view('users.favorites', $data);
     }
 }
